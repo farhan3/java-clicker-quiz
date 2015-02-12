@@ -1,2 +1,2 @@
-# JCS
-Java Client Server
+# Java Client Server (JCS)
+A simple Client/Server Java application.
