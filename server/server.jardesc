@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<jardesc>
+    <jar path="JClickerQuiz/server/server.jar"/>
+    <options buildIfNeeded="true" compress="true" descriptionLocation="/JClickerQuiz/server/server.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="true" overwrite="true" saveDescription="true" storeRefactorings="false" useSourceFolders="false"/>
+    <storedRefactorings deprecationInfo="true" structuralOnly="false"/>
+    <selectedProjects/>
+    <manifest generateManifest="false" mainClassHandleIdentifier="=JClickerQuiz/src&lt;com.github.farhan3.jclickerquiz.server{Server.java[Server" manifestLocation="/JClickerQuiz/server/MANIFEST.MF" manifestVersion="1.0" reuseManifest="true" saveManifest="true" usesManifest="true">
+        <sealing sealJar="false">
+            <packagesToSeal/>
+            <packagesToUnSeal/>
+        </sealing>
+    </manifest>
+    <selectedElements exportClassFiles="true" exportJavaFiles="false" exportOutputFolder="false">
+        <javaElement handleIdentifier="=JClickerQuiz/src&lt;com.github.farhan3.jclickerquiz.common"/>
+        <javaElement handleIdentifier="=JClickerQuiz/src&lt;com.github.farhan3.jclickerquiz.server"/>
+        <file path="/JClickerQuiz/.project"/>
+        <javaElement handleIdentifier="=JClickerQuiz/src&lt;com.github.farhan3.jclickerquiz.model"/>
+        <file path="/JClickerQuiz/.classpath"/>
+    </selectedElements>
+</jardesc>
