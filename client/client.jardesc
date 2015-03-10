@@ -13,7 +13,6 @@
     <selectedElements exportClassFiles="true" exportJavaFiles="false" exportOutputFolder="false">
         <javaElement handleIdentifier="=JClickerQuiz/src&lt;com.github.farhan3.jclickerquiz.client"/>
         <javaElement handleIdentifier="=JClickerQuiz/src&lt;com.github.farhan3.jclickerquiz.common"/>
-        <file path="/JClickerQuiz/.project"/>
-        <file path="/JClickerQuiz/.classpath"/>
+        <file path="/JClickerQuiz/README.md"/>
     </selectedElements>
 </jardesc>
