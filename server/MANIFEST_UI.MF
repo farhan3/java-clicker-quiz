@@ -1,3 +1,5 @@
 Manifest-Version: 1.0
+Sealed: true
+Class-Path: swt.jar swt_osx.jar swt_linux.jar swt_windows.jar
 Main-Class: com.github.farhan3.jclickerquiz.ui.Server
 

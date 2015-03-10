@@ -25,18 +25,28 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.swt.custom.StyledText;
 
 public class Server {
 
-	private Shell _mainShell;
-	private Menu _mainMenu;
+	private Shell 		_mainShell;
+	private Menu 		_mainMenu;
+	private Label 		_horizontalSeprator;
+
 	private Composite _mainComposite;
-	private Composite serverInfoComposite;
+	private Composite _serverInfoComposite;
+	private Composite _consoleComposite;
+	private Composite _classListComposite;
+	private Composite _questionDetailsComposite;
+	private Composite _studentRepliesComposite;
+	private Composite _startEndQuestionComposite;
 	
-	private Text text;
-	private Text text_1;
-	private Table table;
+
+	private Text _studentNumberInputText;
+	private Text _consoleText;
+	private Table _studentRepliesTable;
+	
+	private FormData fdConsoleComposite;
+	private FormData fd_label;
 
 	/**
 	 * Launch the application.
@@ -65,13 +75,30 @@ public class Server {
 			}
 		}
 	}
+	
+	/**
+	 * Create contents of the window.
+	 */
+	protected void createContents() {
+		createShell();
+		createMenu();
+		createMainComposite();
+		createServerInfoComposite();
+		createConsoleComposite();
+		createHorizontalSeparator();
+		createClassListComposite();
+		createQuestionDetails();
+		createStudentRepliesComposite();
+		createStartEndQuestionComposite();
+	}
 
 	
 	private void createShell() {
-		_mainShell = new Shell(SWT.CLOSE | SWT.TITLE | SWT.MIN);
+		//_mainShell = new Shell(SWT.CLOSE | SWT.TITLE | SWT.MIN);
+		_mainShell = new Shell();
 		_mainShell.setMinimumSize(new Point(69, 46));
 		_mainShell.setBackground(SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND));
-		_mainShell.setSize(500, 500);
+		_mainShell.setSize(500, 475);
 		_mainShell.setText("JClickerQuiz Server");
 		_mainShell.setLayout(new FillLayout(SWT.HORIZONTAL));
 	}
@@ -96,232 +123,232 @@ public class Server {
 	}
 
 	private void createServerInfoComposite() {
-		serverInfoComposite = new Composite(_mainComposite, SWT.NONE);
-		serverInfoComposite.setBackground(SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND));
-		serverInfoComposite.setForeground(SWTResourceManager.getColor(SWT.COLOR_WIDGET_DARK_SHADOW));
-		serverInfoComposite.setLayout(null);
-		FormData fd_composite_1 = new FormData();
-		fd_composite_1.top = new FormAttachment(0, 10);
-		fd_composite_1.left = new FormAttachment(0, 10);
-		fd_composite_1.bottom = new FormAttachment(0, 95);
-		fd_composite_1.right = new FormAttachment(0, 490);
-		serverInfoComposite.setLayoutData(fd_composite_1);
+		_serverInfoComposite = new Composite(_mainComposite, SWT.NONE);
+		_serverInfoComposite.setBackground(SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND));
+		_serverInfoComposite.setForeground(SWTResourceManager.getColor(SWT.COLOR_WIDGET_DARK_SHADOW));
+		_serverInfoComposite.setLayout(null);
+		FormData fd = new FormData();
+		fd.right = new FormAttachment(0, 490);
+		fd.left = new FormAttachment(0, 10);
+		fd.bottom = new FormAttachment(0, 95);
+		fd.top = new FormAttachment(0, 10);
+		_serverInfoComposite.setLayoutData(fd);
 		
-		Label lblServerInformation = new Label(serverInfoComposite, SWT.SHADOW_IN | SWT.CENTER);
-		lblServerInformation.setBounds(156, 10, 165, 22);
-		lblServerInformation.setBackground(SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND));
-		lblServerInformation.setForeground(SWTResourceManager.getColor(SWT.COLOR_LIST_FOREGROUND));
-		lblServerInformation.setFont(SWTResourceManager.getFont(".Helvetica Neue DeskInterface", 14, SWT.NORMAL));
-		lblServerInformation.setText("Server Information");
+		Label serverInformationLabel = new Label(_serverInfoComposite, SWT.SHADOW_IN | SWT.CENTER);
+		serverInformationLabel.setBounds(156, 10, 165, 22);
+		serverInformationLabel.setBackground(SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND));
+		serverInformationLabel.setForeground(SWTResourceManager.getColor(SWT.COLOR_LIST_FOREGROUND));
+		serverInformationLabel.setFont(SWTResourceManager.getFont(".Helvetica Neue DeskInterface", 14, SWT.NORMAL));
+		serverInformationLabel.setText("Server Information");
 		
-		Label lblHostipAddress = new Label(serverInfoComposite, SWT.NONE);
-		lblHostipAddress.setBounds(10, 42, 94, 14);
-		lblHostipAddress.setFont(SWTResourceManager.getFont(".Helvetica Neue DeskInterface", 11, SWT.BOLD));
-		lblHostipAddress.setForeground(SWTResourceManager.getColor(SWT.COLOR_LIST_FOREGROUND));
-		lblHostipAddress.setText("Host/IP Address");
+		Label hostIpAddressLabel = new Label(_serverInfoComposite, SWT.NONE);
+		hostIpAddressLabel.setBounds(10, 42, 94, 14);
+		hostIpAddressLabel.setFont(SWTResourceManager.getFont(".Helvetica Neue DeskInterface", 11, SWT.BOLD));
+		hostIpAddressLabel.setForeground(SWTResourceManager.getColor(SWT.COLOR_LIST_FOREGROUND));
+		hostIpAddressLabel.setText("Host/IP Address");
 		
-		Combo combo = new Combo(serverInfoComposite, SWT.NONE);
-		combo.setFont(SWTResourceManager.getFont(".Helvetica Neue DeskInterface", 11, SWT.NORMAL));
-		combo.setBounds(110, 38, 195, 37);
-		combo.setItems(new String[] {"LocalHost", "127.0.0.1"});
-		combo.setText("LocalHost");
+		Combo hostIpAddressCombo = new Combo(_serverInfoComposite, SWT.NONE);
+		hostIpAddressCombo.setFont(SWTResourceManager.getFont(".Helvetica Neue DeskInterface", 11, SWT.NORMAL));
+		hostIpAddressCombo.setBounds(110, 38, 195, 37);
+		hostIpAddressCombo.setItems(new String[] {"LocalHost", "127.0.0.1"});
+		hostIpAddressCombo.setText("LocalHost");
 		
-		Spinner spinner = new Spinner(serverInfoComposite, SWT.BORDER);
-		spinner.setBounds(390, 37, 78, 22);
-		spinner.setFont(SWTResourceManager.getFont(".Helvetica Neue DeskInterface", 11, SWT.NORMAL));
-		spinner.setMaximum(65535);
-		spinner.setMinimum(1025);
-		spinner.setSelection(21800);
+		Label portNumberLabel = new Label(_serverInfoComposite, SWT.NONE);
+		portNumberLabel.setBounds(311, 41, 73, 14);
+		portNumberLabel.setFont(SWTResourceManager.getFont(".Helvetica Neue DeskInterface", 11, SWT.BOLD));
+		portNumberLabel.setForeground(SWTResourceManager.getColor(SWT.COLOR_LIST_FOREGROUND));
+		portNumberLabel.setText("Port Number");
 		
-		Label lblNewLabel = new Label(serverInfoComposite, SWT.NONE);
-		lblNewLabel.setBounds(311, 41, 73, 14);
-		lblNewLabel.setFont(SWTResourceManager.getFont(".Helvetica Neue DeskInterface", 11, SWT.BOLD));
-		lblNewLabel.setForeground(SWTResourceManager.getColor(SWT.COLOR_LIST_FOREGROUND));
-		lblNewLabel.setText("Port Number");
+		Spinner portNumberSpinner = new Spinner(_serverInfoComposite, SWT.BORDER);
+		portNumberSpinner.setBounds(390, 37, 78, 22);
+		portNumberSpinner.setFont(SWTResourceManager.getFont(".Helvetica Neue DeskInterface", 11, SWT.NORMAL));
+		portNumberSpinner.setMaximum(65535);
+		portNumberSpinner.setMinimum(1025);
+		portNumberSpinner.setSelection(21800);
 	}
 	
-	/**
-	 * Create contents of the window.
-	 */
-	protected void createContents() {
-		createShell();
-		createMenu();
-		createMainComposite();
-		createServerInfoComposite();
+	private void createConsoleComposite() {
+		_consoleComposite = new Composite(_mainComposite, SWT.NONE);
+		_consoleComposite.setForeground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
+		_consoleComposite.setLayout(null);
+		fdConsoleComposite = new FormData();
+		fdConsoleComposite.bottom = new FormAttachment(100, -10);
+		fdConsoleComposite.right = new FormAttachment(_serverInfoComposite, 0, SWT.RIGHT);
+		fdConsoleComposite.left = new FormAttachment(0, 10);
+		_consoleComposite.setLayoutData(fdConsoleComposite);
+		
+		_consoleText = new Text(_consoleComposite, SWT.BORDER | SWT.V_SCROLL);
+		_consoleText.setEditable(false);
+		_consoleText.setForeground(SWTResourceManager.getColor(SWT.COLOR_BLACK));
+		_consoleText.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
+		_consoleText.setBounds(10, 10, 460, 30);
+	}
 	
-		
-		
-		Composite composite_2 = new Composite(_mainComposite, SWT.NONE);
-		composite_2.setForeground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
-		composite_2.setLayout(null);
-		FormData fd_composite_2 = new FormData();
-		fd_composite_2.bottom = new FormAttachment(100, -10);
-		fd_composite_2.right = new FormAttachment(serverInfoComposite, 0, SWT.RIGHT);
-		fd_composite_2.left = new FormAttachment(serverInfoComposite, 0, SWT.LEFT);
-		composite_2.setLayoutData(fd_composite_2);
-		
-		Label label = new Label(_mainComposite, SWT.SEPARATOR | SWT.HORIZONTAL);
-		FormData fd_label = new FormData();
-		fd_label.top = new FormAttachment(serverInfoComposite, 6);
-		fd_label.bottom = new FormAttachment(serverInfoComposite, 8, SWT.BOTTOM);
+	private void createHorizontalSeparator() {
+		_horizontalSeprator = new Label(_mainComposite, SWT.SEPARATOR | SWT.HORIZONTAL);
+		fd_label = new FormData();
+		fd_label.top = new FormAttachment(_serverInfoComposite, 6);
 		fd_label.left = new FormAttachment(0);
 		fd_label.right = new FormAttachment(0, 500);
-		label.setLayoutData(fd_label);
+		_horizontalSeprator.setLayoutData(fd_label);
+	}
+	
+	private void createClassListComposite() {
+		_classListComposite = new Composite(_mainComposite, SWT.BORDER);
+		fd_label.bottom = new FormAttachment(_classListComposite, -6);
+		FormData fd = new FormData();
+		fd.bottom = new FormAttachment(100, -107);
+		fd.left = new FormAttachment(100, -158);
+		fd.right = new FormAttachment(100, -23);
+		fd.top = new FormAttachment(0, 109);		
+		_classListComposite.setLayoutData(fd);
 		
-		Composite composite_3 = new Composite(_mainComposite, SWT.BORDER);
-		fd_composite_2.top = new FormAttachment(composite_3, 50);
-		FormData fd_composite_3 = new FormData();
-		fd_composite_3.top = new FormAttachment(label, 6);
-		fd_composite_3.bottom = new FormAttachment(100, -124);
-		fd_composite_3.right = new FormAttachment(100, -23);
+		final List classList = new List(_classListComposite, SWT.BORDER | SWT.V_SCROLL);
+		classList.setBounds(10, 37, 113, 140);
 		
-		text_1 = new Text(composite_2, SWT.BORDER | SWT.V_SCROLL);
-		text_1.setEditable(false);
-		text_1.setForeground(SWTResourceManager.getColor(SWT.COLOR_BLACK));
-		text_1.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
-		text_1.setBounds(10, 10, 460, 44);
-		composite_3.setLayoutData(fd_composite_3);
+		Label classListLabel = new Label(_classListComposite, SWT.NONE);
+		classListLabel.setFont(SWTResourceManager.getFont(".Helvetica Neue DeskInterface", 14, SWT.NORMAL));
+		classListLabel.setBounds(32, 10, 68, 21);
+		classListLabel.setText("Class List");
 		
-		final List list = new List(composite_3, SWT.BORDER | SWT.V_SCROLL);
-		list.setBounds(10, 37, 113, 140);
+		_studentNumberInputText = new Text(_classListComposite, SWT.BORDER);
+		_studentNumberInputText.setBounds(10, 180, 113, 19);
 		
-		Label lblStudents = new Label(composite_3, SWT.NONE);
-		lblStudents.setFont(SWTResourceManager.getFont(".Helvetica Neue DeskInterface", 14, SWT.NORMAL));
-		lblStudents.setBounds(32, 10, 68, 21);
-		lblStudents.setText("Class List");
-		
-		text = new Text(composite_3, SWT.BORDER);
-		text.setBounds(10, 180, 113, 19);
-		
-		Button btnAddStudent = new Button(composite_3, SWT.NONE);
-		btnAddStudent.addSelectionListener(new SelectionAdapter() {
+		Button addStudentButton = new Button(_classListComposite, SWT.NONE);
+		addStudentButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				String textStr = text.getText();
+				String textStr = _studentNumberInputText.getText();
 				if (textStr != null && !textStr.isEmpty()) {
-					if (!Arrays.asList(list.getItems()).contains(textStr)) {
-						list.add(textStr);
+					if (!Arrays.asList(classList.getItems()).contains(textStr)) {
+						classList.add(textStr);
 					}
 				}
 
 			}
 		});
-		btnAddStudent.setFont(SWTResourceManager.getFont(".Helvetica Neue DeskInterface", 11, SWT.BOLD));
-		btnAddStudent.setBounds(19, 205, 95, 28);
-		btnAddStudent.setText("Add Student");
+		addStudentButton.setFont(SWTResourceManager.getFont(".Helvetica Neue DeskInterface", 11, SWT.BOLD));
+		addStudentButton.setBounds(19, 205, 95, 28);
+		addStudentButton.setText("Add Student");
+	}
+	
+	private void createQuestionDetails() {
+		_questionDetailsComposite = new Composite(_mainComposite, SWT.BORDER);
+		_questionDetailsComposite.setLayout(null);
+		FormData fd = new FormData();
+		fd.right = new FormAttachment(0, 158);
+		fd.bottom = new FormAttachment(_horizontalSeprator, 243, SWT.BOTTOM);
+		fd.left = new FormAttachment(0, 23);
+		fd.top = new FormAttachment(_horizontalSeprator, 6);
+		_questionDetailsComposite.setLayoutData(fd);
 		
-		Composite composite_4 = new Composite(_mainComposite, SWT.BORDER);
-		composite_4.setLayout(null);
-		FormData fd_composite_4 = new FormData();
-		fd_composite_4.top = new FormAttachment(label, 6);
-		fd_composite_4.bottom = new FormAttachment(composite_2, -50);
-		fd_composite_4.left = new FormAttachment(0, 23);
-		composite_4.setLayoutData(fd_composite_4);
+		Label questionLabel = new Label(_questionDetailsComposite, SWT.NONE);
+		questionLabel.setFont(SWTResourceManager.getFont(".Helvetica Neue DeskInterface", 14, SWT.NORMAL));
+		questionLabel.setBounds(10, 11, 112, 23);
+		questionLabel.setText("Question Details");
 		
-		Label lblQuestion = new Label(composite_4, SWT.NONE);
-		lblQuestion.setFont(SWTResourceManager.getFont(".Helvetica Neue DeskInterface", 14, SWT.NORMAL));
-		lblQuestion.setBounds(10, 11, 112, 23);
-		lblQuestion.setText("Question Details");
+		Label correctAnswerLabel = new Label(_questionDetailsComposite, SWT.NONE);
+		correctAnswerLabel.setFont(SWTResourceManager.getFont(".Helvetica Neue DeskInterface", 11, SWT.BOLD));
+		correctAnswerLabel.setBounds(10, 88, 92, 14);
+		correctAnswerLabel.setText("Correct Answer");
 		
-		final Button btnRadioButton = new Button(composite_4, SWT.RADIO);
-		btnRadioButton.addSelectionListener(new SelectionAdapter() {
+		final Button aOptionRadioButton = new Button(_questionDetailsComposite, SWT.RADIO);
+		aOptionRadioButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 			}
 		});
-		btnRadioButton.setBounds(10, 108, 36, 18);
-		btnRadioButton.setText("A");
+		aOptionRadioButton.setBounds(10, 108, 36, 18);
+		aOptionRadioButton.setText("A");
 		
-		Button btnRadioButton_1 = new Button(composite_4, SWT.RADIO);
-		btnRadioButton_1.setBounds(10, 132, 36, 18);
-		btnRadioButton_1.setText("B");
+		Button bOptionRadioButton = new Button(_questionDetailsComposite, SWT.RADIO);
+		bOptionRadioButton.setBounds(10, 132, 36, 18);
+		bOptionRadioButton.setText("B");
 		
-		Button btnRadioButton_2 = new Button(composite_4, SWT.RADIO);
-		btnRadioButton_2.setBounds(10, 156, 36, 18);
-		btnRadioButton_2.setText("C");
+		Button cOptionRadioButton = new Button(_questionDetailsComposite, SWT.RADIO);
+		cOptionRadioButton.setBounds(10, 156, 36, 18);
+		cOptionRadioButton.setText("C");
 		
-		Button btnRadioButton_3 = new Button(composite_4, SWT.RADIO);
-		btnRadioButton_3.setBounds(10, 180, 36, 18);
-		btnRadioButton_3.setText("D");
+		Button dOptionRadioButton = new Button(_questionDetailsComposite, SWT.RADIO);
+		dOptionRadioButton.setBounds(10, 180, 36, 18);
+		dOptionRadioButton.setText("D");
 		
-		final Button btnRadioButton_4 = new Button(composite_4, SWT.RADIO);
-		btnRadioButton_4.setBounds(10, 204, 36, 18);
-		btnRadioButton_4.setText("E");
+		final Button eOptionRadioButton = new Button(_questionDetailsComposite, SWT.RADIO);
+		eOptionRadioButton.setBounds(10, 204, 36, 18);
+		eOptionRadioButton.setText("E");
 		
-		final Spinner spinner_1 = new Spinner(composite_4, SWT.BORDER);
-		spinner_1.setMaximum(5);
-		spinner_1.setMinimum(2);
-		spinner_1.setBounds(10, 59, 36, 23);
-		spinner_1.addModifyListener(new ModifyListener() {
+		
+		Label numberOfChoicesLabel = new Label(_questionDetailsComposite, SWT.NONE);
+		numberOfChoicesLabel.setFont(SWTResourceManager.getFont(".Helvetica Neue DeskInterface", 11, SWT.BOLD));
+		numberOfChoicesLabel.setBounds(10, 40, 92, 13);
+		numberOfChoicesLabel.setText("Num. of Choices");
+		
+		final Spinner numOfChoicesspinner = new Spinner(_questionDetailsComposite, SWT.BORDER);
+		numOfChoicesspinner.setMaximum(5);
+		numOfChoicesspinner.setMinimum(2);
+		numOfChoicesspinner.setBounds(10, 59, 36, 23);
+		numOfChoicesspinner.addModifyListener(new ModifyListener() {
 			
 			@Override
 			public void modifyText(ModifyEvent e) {
-				btnRadioButton_4.setEnabled(!btnRadioButton_4.getEnabled());
+				eOptionRadioButton.setEnabled(!eOptionRadioButton.getEnabled());
 
 
 			}
 		});
 		
-		text_1.append(spinner_1.getText() + "\n");
-		
-		Label lblNumberOfOptions = new Label(composite_4, SWT.NONE);
-		lblNumberOfOptions.setFont(SWTResourceManager.getFont(".Helvetica Neue DeskInterface", 11, SWT.BOLD));
-		lblNumberOfOptions.setBounds(10, 40, 92, 13);
-		lblNumberOfOptions.setText("Num. of Options");
-		
-		Label lblCorrectAnswer = new Label(composite_4, SWT.NONE);
-		lblCorrectAnswer.setFont(SWTResourceManager.getFont(".Helvetica Neue DeskInterface", 11, SWT.BOLD));
-		lblCorrectAnswer.setBounds(10, 88, 92, 14);
-		lblCorrectAnswer.setText("Correct Answer");
-		fd_composite_4.right = new FormAttachment(100, -341);
-		fd_composite_3.left = new FormAttachment(0, 342);
-		
-		Composite composite_6 = new Composite(_mainComposite, SWT.BORDER);
-		composite_6.setLayout(null);
-		FormData fd_composite_6 = new FormData();
-		fd_composite_6.bottom = new FormAttachment(composite_3, 0, SWT.BOTTOM);
-		fd_composite_6.top = new FormAttachment(label, 6);
-		fd_composite_6.right = new FormAttachment(composite_3, -25);
-		fd_composite_6.left = new FormAttachment(composite_4, 23);
-		composite_6.setLayoutData(fd_composite_6);
-		
-		table = new Table(composite_6, SWT.BORDER | SWT.FULL_SELECTION);
-		table.setBounds(12, 38, 115, 161);
-		table.setHeaderVisible(true);
-		table.setLinesVisible(true);
-		
-		TableColumn tblclmnStudent = new TableColumn(table, SWT.NONE);
-		tblclmnStudent.setWidth(67);
-		tblclmnStudent.setText("Student");
-		
-		TableColumn tblclmnAnswer = new TableColumn(table, SWT.NONE);
-		tblclmnAnswer.setWidth(44);
-		tblclmnAnswer.setText("Answer");
-		
-		Button btnList = new Button(composite_6, SWT.NONE);
-		btnList.setFont(SWTResourceManager.getFont(".Helvetica Neue DeskInterface", 11, SWT.BOLD));
-		btnList.setBounds(34, 205, 65, 28);
-		btnList.setText("List");
-		
-		Label lblStudentReplies = new Label(composite_6, SWT.NONE);
-		lblStudentReplies.setFont(SWTResourceManager.getFont(".Helvetica Neue DeskInterface", 14, SWT.NORMAL));
-		lblStudentReplies.setBounds(12, 10, 108, 22);
-		lblStudentReplies.setText("Student Replies");
-		
-		Composite composite_5 = new Composite(_mainComposite, SWT.BORDER);
-		composite_5.setLayout(new FillLayout(SWT.HORIZONTAL));
-		FormData fd_composite_5 = new FormData();
-		fd_composite_5.top = new FormAttachment(composite_3, 11);
-		fd_composite_5.bottom = new FormAttachment(composite_2, -6);
-		fd_composite_5.left = new FormAttachment(composite_4, 0, SWT.LEFT);
-		fd_composite_5.right = new FormAttachment(composite_3, 0, SWT.RIGHT);
-		composite_5.setLayoutData(fd_composite_5);
-		
-		Button button = new Button(composite_5, SWT.NONE);
-		button.setText("Start Question");
-		
-		Button button_1 = new Button(composite_5, SWT.NONE);
-		button_1.setText("End Question");
-
 	}
+	
+	private void createStudentRepliesComposite() {
+		_studentRepliesComposite = new Composite(_mainComposite, SWT.BORDER);
+		_studentRepliesComposite.setLayout(null);
+		FormData fd = new FormData();
+		fd.bottom = new FormAttachment(_horizontalSeprator, 243, SWT.BOTTOM);
+		fd.top = new FormAttachment(_horizontalSeprator, 6);
+		fd.right = new FormAttachment(_classListComposite, -25);
+		fd.left = new FormAttachment(_questionDetailsComposite, 24);
+		_studentRepliesComposite.setLayoutData(fd);
+		
+		Label studentRepliesLabel = new Label(_studentRepliesComposite, SWT.NONE);
+		studentRepliesLabel.setFont(SWTResourceManager.getFont(".Helvetica Neue DeskInterface", 14, SWT.NORMAL));
+		studentRepliesLabel.setBounds(12, 10, 108, 22);
+		studentRepliesLabel.setText("Student Replies");
+		
+		_studentRepliesTable = new Table(_studentRepliesComposite, SWT.BORDER | SWT.FULL_SELECTION);
+		_studentRepliesTable.setBounds(12, 38, 115, 161);
+		_studentRepliesTable.setHeaderVisible(true);
+		_studentRepliesTable.setLinesVisible(true);
+		
+		TableColumn studentNumColumn = new TableColumn(_studentRepliesTable, SWT.NONE);
+		studentNumColumn.setWidth(67);
+		studentNumColumn.setText("Student");
+		
+		TableColumn answerColumn = new TableColumn(_studentRepliesTable, SWT.NONE);
+		answerColumn.setWidth(44);
+		answerColumn.setText("Answer");
+		
+		Button listButton = new Button(_studentRepliesComposite, SWT.NONE);
+		listButton.setFont(SWTResourceManager.getFont(".Helvetica Neue DeskInterface", 11, SWT.BOLD));
+		listButton.setBounds(34, 205, 65, 28);
+		listButton.setText("List");
+	}
+	
+	private void createStartEndQuestionComposite() {
+		_startEndQuestionComposite = new Composite(_mainComposite, SWT.NONE);
+		fdConsoleComposite.top = new FormAttachment(_startEndQuestionComposite, 6);
+		_startEndQuestionComposite.setLayout(new FillLayout(SWT.HORIZONTAL));
+		FormData fd = new FormData();
+		fd.right = new FormAttachment(0, 477);
+		fd.bottom = new FormAttachment(0, 385);
+		fd.top = new FormAttachment(0, 352);
+		fd.left = new FormAttachment(0, 23);
+		_startEndQuestionComposite.setLayoutData(fd);
+		
+		Button startQuestionButton = new Button(_startEndQuestionComposite, SWT.NONE);
+		startQuestionButton.setText("Start Question");
+		
+		Button endQuestionButton = new Button(_startEndQuestionComposite, SWT.NONE);
+		endQuestionButton.setText("End Question");
+	}
+	
 }
