@@ -4,9 +4,17 @@ import java.net.URISyntaxException;
 
 import com.github.farhan3.jclickerquiz.model.StudentManager;
 
+/**
+ * The Server class is the main class to start the server for
+ * JClickerQuiz
+ * 
+ * @author farhan
+ *
+ */
 public class Server {
 	
 	public static void main(String[] args) {
+		
 		if (args.length != 1 && args.length != 2) {
 			System.err.println(
 					"Usage: java -jar server.jar <port number> <student list file path>\n\n"
@@ -20,9 +28,11 @@ public class Server {
 			System.exit(1);
 		}
 		
+		// the port on which the server should run
 		int portNumber = Integer.parseInt(args[0]);
 
 		try {
+			// if the second arg is provided, then read the list of student numbers
 			if (args.length == 2) {
 				String studentListFilePath = args[1];
 				StudentManager.getInstance().addStudents(studentListFilePath);;
@@ -33,6 +43,7 @@ public class Server {
 			e.printStackTrace();
 		}
 		
+		// run ServerControl; this handles the user's input cmds
 		new ServerControl(portNumber).run();
 	}
 	

@@ -33,112 +33,42 @@ public class ClientControl {
 	private String _host;
 	private int _port = 0;
 	
-	public ClientControl(){
-		
-	}
-	
+	/**
+	 * start the client's cmd handler.
+	 * 
+	 */
 	public void run() {
 		System.out.println("Starting client...\n");
 		
 		System.out.println(MAN_PAGE);
 		
-		System.out.print("> ");
+		System.out.print("> "); //formatting
 		
       try (
 				BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
 		) {
 			String userInput = null;
 		
+			// handle user's input
 			while ((userInput = stdIn.readLine()) != null) {
-				System.out.println();
+				System.out.println(); //formatting
 				
-				if (userInput.startsWith(STUDENT_NUMBER_CMD)) {
-					System.out.println("Please enter your student number: ");
-					
-					try {
-						_studentNumber = Integer.parseInt(stdIn.readLine());
-						System.out.println("Student number accepted.");
-					} catch (NumberFormatException e) {
-						System.err.println("ERROR: Invalid student number. ");
-					}		
-
-				} else if (userInput.startsWith(CLASS_INFO_CMD)) {
-					System.out.println("Please enter the host name/IP address. For example, 192.168.0.1: ");
-					_host = stdIn.readLine();
-					
-					System.out.println("Host accepted.");
-					
-					System.out.println("Please enter the host's port number: ");
-					
-					try {
-						_port = Integer.parseInt(stdIn.readLine());
-						System.out.println("Port accepted.");
-					} catch (NumberFormatException e) {
-						System.err.println("ERROR: Invalid port number entered. Please use the " + CLASS_INFO_CMD + " again. ");
-					}	
-					
-				} else if (userInput.startsWith(ENTER_CHOICE_CMD)) {
-					if (_studentNumber == 0 || _host == null || _port == 0) {
-						System.out.println("Please ensure the provided commands to enter the following information: \n"
-								+ "1) Student number \n"
-								+ "2) Host name/IP address \n"
-								+ "3) Host port number");
-					} else {
-						System.out.println("\nConnecting to " + _host + ":" + _port + " as " + _studentNumber + ". ");
-						
-						try (
-				          Socket socket = new Socket(_host, _port);
-				          PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-				          BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-					   ) {
-							
-							out.println(Protocol.sendStudentNumber(_studentNumber));
-							
-							String serverResponse = in.readLine();
-							if (!socket.isClosed() && !serverResponse.equals("Goodbye. ")) {
-								System.out.println("\nConnected to the server...");
-								System.out.println("\n" + Protocol.recieveChoicesString(serverResponse));
-								
-								Collection<String> recievedChoices = Protocol.recieveChoices(serverResponse);
-								
-								System.out.print("Respone: ");
-								
-								while ((userInput = stdIn.readLine()) != null) {
-									if (!socket.isClosed()) {		
-										if (recievedChoices.contains(userInput)) {
-											out.println(Protocol.sendAnswer(Option.valueOf(userInput)));
-											System.out.println("\nResponse sent.");
-											break;
-										} else {
-											System.err.println("ERROR: Invalid choice. Try again.");
-											System.out.print("\nResponse: ");
-										}			
-									}
-								}
-								
-							} else if (serverResponse.equals("Goodbye. ")) {
-								System.err.println("ERROR: Server disconnected immediately. \n"
-										+ "Please ensure you are in the class.");
-							} else {
-								System.err.println("ERROR: No response from server.");
-							}
-						} catch (IOException e) {
-							System.err.println("ERROR: An error occured while connecting to the server.\n"
-									+ "Please ensure the following information is correct:\n"
-									+ "Host: " + _host + "\n"
-									+ "Port: " + _port + "\n");
-						}
-					}
-				} else if (userInput.equals(HELP_CMD)) {
+				if (userInput.startsWith(STUDENT_NUMBER_CMD)) { // handle STUDENT_NUMBER cmd
+					handleStudentNumberCmd(userInput, stdIn);
+				} else if (userInput.startsWith(CLASS_INFO_CMD)) { // handle CLASS_INFO cmd
+					handleClassInfoCmd(userInput, stdIn);
+				} else if (userInput.startsWith(ENTER_CHOICE_CMD)) { // handle ENTER_CHOICE cmd
+					handleEnterChoiceCmd(userInput, stdIn);
+				} else if (userInput.equals(HELP_CMD)) { // handle HELP cmd
 					System.out.println(MAN_PAGE);
-				} else if (userInput.equals(EXIT_CMD)) {
+				} else if (userInput.equals(EXIT_CMD)) { // handle EXIT cmd
 						break;
-				} else {
-					System.err.println("ERROR: Invalid input. Please use the " + HELP_CMD + " "
+				} else { // handle invalid input
+					System.err.println("ERROR: Invalid input. Please use the " + HELP_CMD 
 							+ "command to view the avalible commands. ");
 				}
 				
-				System.out.print("\n> ");
+				System.out.print("\n> "); //formatting
 			}
 			
 			shutdown();
@@ -147,11 +77,119 @@ public class ClientControl {
 		}
 	}
 	
-	public void shutdown() {
+	/**
+	 * Handle STUDENT_NUMBER cmd
+	 * 
+	 * @param userInput
+	 * @param stdIn used to read additional input from user; caller should close stream
+	 * @throws IOException
+	 */
+	private void handleStudentNumberCmd(String userInput, BufferedReader stdIn) throws IOException {
+		System.out.println("Please enter your student number: ");
+		
+		try {
+			_studentNumber = Integer.parseInt(stdIn.readLine());
+			System.out.println("Student number accepted.");
+		} catch (NumberFormatException e) {
+			System.err.println("ERROR: Invalid student number. ");
+		}		
+	}
+	
+	/**
+	 * Handle CLASS_INFO cmd
+	 * 
+	 * @param userInput 
+	 * @param stdIn used to read additional input from user; caller should close stream
+	 * @throws IOException
+	 */
+	private void handleClassInfoCmd(String userInput, BufferedReader stdIn) throws IOException {
+		System.out.println("Please enter the host name/IP address. For example, 192.168.0.1: ");
+		_host = stdIn.readLine();
+		
+		System.out.println("Host accepted.");
+		
+		System.out.println("Please enter the host's port number: ");
+		
+		try {
+			_port = Integer.parseInt(stdIn.readLine());
+			System.out.println("Port accepted.");
+		} catch (NumberFormatException e) {
+			System.err.println("ERROR: Invalid port number entered. Please use the " + CLASS_INFO_CMD + " again. ");
+		}	
+	}
+	
+	/**
+	 * Handle ENTER_CHOICE cmd
+	 * 
+	 * @param userInput
+	 * @param stdIn used to read additional input from user; caller should close stream
+	 */
+	private void handleEnterChoiceCmd(String userInput, BufferedReader stdIn) {
+		if (_studentNumber == 0 || _host == null || _port == 0) {
+			System.out.println("Please ensure the provided commands to enter the following information: \n"
+					+ "1) Student number \n"
+					+ "2) Host name/IP address \n"
+					+ "3) Host port number");
+		} else {
+			System.out.println("\nConnecting to " + _host + ":" + _port + " as " + _studentNumber + ". ");
+			
+			try (
+	          Socket socket = new Socket(_host, _port);
+	          PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+	          BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+		   ) {
+				
+				out.println(Protocol.sendStudentNumber(_studentNumber));
+				
+				String serverResponse = in.readLine();
+				if (!socket.isClosed() && !serverResponse.equals("Goodbye. ")) {
+					System.out.println("\nConnected to the server...");
+					System.out.println("\n" + Protocol.recieveChoicesString(serverResponse));
+					
+					Collection<String> recievedChoices = Protocol.recieveChoices(serverResponse);
+					
+					System.out.print("Respone: ");
+					
+					while ((userInput = stdIn.readLine()) != null) {
+						if (!socket.isClosed()) {		
+							if (recievedChoices.contains(userInput)) {
+								out.println(Protocol.sendAnswer(Option.valueOf(userInput)));
+								System.out.println("\nResponse sent.");
+								break;
+							} else {
+								System.err.println("ERROR: Invalid choice. Try again.");
+								System.out.print("\nResponse: ");
+							}			
+						}
+					}
+					
+				} else if (serverResponse.equals("Goodbye. ")) {
+					System.err.println("ERROR: Server disconnected immediately. \n"
+							+ "Please ensure you are in the class.");
+				} else {
+					System.err.println("ERROR: No response from server.");
+				}
+			} catch (IOException e) {
+				System.err.println("ERROR: An error occured while connecting to the server.\n"
+						+ "Please ensure the following information is correct:\n"
+						+ "Host: " + _host + "\n"
+						+ "Port: " + _port + "\n");
+			}
+		}
+	}
+	
+	/**
+	 * Handle shutdown gracefully
+	 */
+	private void shutdown() {
 		System.out.println("\nShutting down...");
 	}
 	
-	class ShutdownHandler extends Thread {
+	/**
+	 * Handle forced shutdown
+	 * 
+	 */
+	protected class ShutdownHandler extends Thread {
 	
 		protected ShutdownHandler() {
 			super("Shutdown handler thread.");

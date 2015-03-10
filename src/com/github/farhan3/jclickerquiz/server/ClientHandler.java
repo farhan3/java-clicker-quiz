@@ -11,12 +11,23 @@ import com.github.farhan3.jclickerquiz.common.Protocol;
 import com.github.farhan3.jclickerquiz.model.Question;
 import com.github.farhan3.jclickerquiz.model.StudentManager;
 
+/**
+ * Handle communication with a client
+ * 
+ * @author farhan
+ *
+ */
 public class ClientHandler extends Thread {
 
 	private Socket _socket;
 	private Question _question;
 	
-	public ClientHandler(Socket socket, Question question) {
+	/**
+	 * 
+	 * @param socket the socket which is connected to the client
+	 * @param question the question object associated with the currently running question
+	 */
+	protected ClientHandler(Socket socket, Question question) {
 		super("Client handler thread.");
 		_socket = socket;
 		_question = question;
@@ -31,8 +42,10 @@ public class ClientHandler extends Thread {
 			String inputLine = null;
 			int studentNumber = 0;
 			
+			// handle the input from the socket and output messages according to the protocol
 			while ((inputLine = in.readLine()) != null) {
 				
+				// handle the input stream according to the protocol
 				if (Protocol.isStudentNumberMessage(inputLine)) {
 					if (!StudentManager.getInstance().checkStudentInClass(Protocol.recieveStudentNumber(inputLine))) {
 						break;

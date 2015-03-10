@@ -3,7 +3,12 @@ package com.github.farhan3.jclickerquiz.common;
 import java.util.ArrayList;
 import java.util.Collection;
 
-
+/**
+ * This protocol handles communication between the client and server.
+ * 
+ * @author farhan
+ *
+ */
 public class Protocol {
 
 	private static final String AVALIABLE_CHOICES_KEY = "Avaliable Choices";
