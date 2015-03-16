@@ -5,9 +5,11 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.util.Collection;
+import java.util.LinkedList;
 
+import com.github.farhan3.jclickerquiz.common.Option;
 import com.github.farhan3.jclickerquiz.model.Question;
-import com.github.farhan3.jclickerquiz.model.StudentManager;
+import com.github.farhan3.jclickerquiz.model.ClassManager;
 
 /**
  * This class handles the user's input cmds, such as
@@ -42,6 +44,8 @@ public class ServerControl {
 	private Question 			_question;
 	private ClientListener 	_clientListener;
 	private ServerSocket		_serverSocket;
+	
+	private Collection<Question> _questions = new LinkedList<Question>();
 	
 	/**
 	 * 
@@ -115,9 +119,10 @@ public class ServerControl {
 		System.out.println("Starting question...");
 		
 		// ensure that the cmd's syntax is correct
-		if ((userInput.length() != START_QUESTION_CMD.length()) && 
-				userInput.substring(0, userInput.indexOf('(')).equals(START_QUESTION_CMD_PREFIX)) {
-			System.err.println("ERROR: Syntax error with " + START_QUESTION_CMD + " command. \n> ");
+		if ((userInput.length() != START_QUESTION_CMD.length()) || 
+				!userInput.substring(0, userInput.indexOf(OPEN_BRACKET)).equals(START_QUESTION_CMD_PREFIX)) {
+			System.err.println("ERROR: Syntax error with " + START_QUESTION_CMD + " command. ");
+			System.out.print("\n> "); //formatting
 			return "continue";
 		}
 		
@@ -126,7 +131,8 @@ public class ServerControl {
 		// ensure that the number of choices is 2 >= n >= 5
 		if ( inputNumber < '2' || inputNumber > '5') {
 			System.err.println("\nERROR: Syntax error with " + START_QUESTION_CMD + " command.\n"
-					+ "The number of choices n must be 2, 3, 4 or 5. \n> ");
+					+ "The number of choices n must be 2, 3, 4 or 5. ");
+			System.out.print("\n> "); //formatting
 			return "continue";
 		}
 
@@ -138,19 +144,21 @@ public class ServerControl {
 					+ END_QUESTION_CMD + " command to stop it.");
 		} else {
 			
-			if (StudentManager.getInstance().getStudents().isEmpty()) {
+			if (ClassManager.getInstance().getStudents().isEmpty()) {
 				System.err.println("WARNING: There are currently no students in the class. "
 						+ "Use the " + ADD_STUDENTS_CMD + " command to add students."
 						+ "The question will still be started. ");
 			}
 			
 			_question = new Question(nOfChoices);
-			
+			_questions.add(_question);
+	
 			try {
 				_serverSocket = new ServerSocket(_portNumber);
 			} catch (IOException e){
 				System.err.println("ERROR: Could not create the server on the specified port.\n"
-						+ "Please choose a different port and try again.\n> ");
+						+ "Please choose a different port and try again.");
+				System.out.print("\n> "); //formatting
 				return "break";
 			}
 			
@@ -183,9 +191,12 @@ public class ServerControl {
 			try {
 				_serverSocket.close();
 				_clientListener.join();
+				
+				_questionStarted = false; 
 				System.out.println("Ended question.");
 			} catch (InterruptedException | IOException e) {
 				System.err.println("ERROR: Unable to stop the client listener or close the server socket.");
+				_questionStarted = false; 
 			}
 		}
 	}
@@ -195,20 +206,54 @@ public class ServerControl {
 	 * @param userInput
 	 */
 	private void handleListCmd(String userInput) {
-		if (_question == null) {
-			System.err.println("ERROR: There was no question created. Use the "
+		if (_question == null || _questions.isEmpty()) {
+			System.err.println("ERROR: There was no question(s) created. Use the "
 					+ START_QUESTION_CMD + " command to start a question.");
-		} else {
-			Collection<Integer> studentNumbers = _question.getListOfStudents();
+		} else if (ClassManager.getInstance().getStudents().isEmpty()) {
+			System.err.println("ERROR: There was no students in the class. Use the "
+					+ ADD_STUDENTS_CMD + " command to start add students.");
+		} else {	
+			System.out.println("The following students answered the question(s) (dash means no answer): ");
 			
-			if (studentNumbers.isEmpty()) {
-				System.out.println("No students have answered the question. ");
-			} else {
-				System.out.println("The following students answered the question: ");
-				System.out.println("Student_number \t\t\tResponse");
-				for (Integer studentNumber : studentNumbers) {
-					System.out.println(studentNumber + "\t" + _question.getStudentsAnswer(studentNumber));
+			int numOfQuestions = _questions.size();
+			
+			StringBuffer columnHeaders = new StringBuffer(100);
+			
+			columnHeaders.append("Student Number");
+			
+			for (int i = columnHeaders.length(); i < 20; i++) {
+				columnHeaders.append(" ");
+			}
+			
+			for (int i = 1; i <= numOfQuestions; i++) {
+				columnHeaders.append("Q" + i + "   ");
+			}
+			
+			System.out.println(columnHeaders.toString());
+			
+			StringBuffer studentRow;
+			Option studentAnswer;
+			for (int studentNumber : ClassManager.getInstance().getStudents()) {
+				studentRow = new StringBuffer(50);
+				studentRow.append(studentNumber);
+				
+				for (int i = studentRow.length(); i < 20; i++) {
+					studentRow.append(" ");
 				}
+				
+				for (Question question : _questions) {
+					studentAnswer = question.getStudentsAnswer(studentNumber);
+					
+					if (studentAnswer == null) {
+						studentRow.append("-");
+					} else {
+						studentRow.append(studentAnswer.toString());
+					}
+					
+					studentRow.append("    ");
+				}
+				
+				System.out.println(studentRow.toString());
 			}
 		}
 	}
@@ -223,7 +268,7 @@ public class ServerControl {
 		System.out.println("Adding new students to the class.\n"
 				+ "To add a student to the class, type a student number and press enter.\n"
 				+ "Ensure that the student number is not larger than " + Integer.MAX_VALUE + ".\n"
-				+ "When you are finished adding student number, enter \"DONE\".");
+				+ "When you are finished adding student numbers, enter \"DONE\".");
 		
 		int studentNumber;
 		while ((userInput = stdIn.readLine()) != null) {
@@ -234,7 +279,7 @@ public class ServerControl {
 			} else {
 				try {
 					studentNumber = Integer.parseInt(userInput);
-					StudentManager.getInstance().addStudent(studentNumber);
+					ClassManager.getInstance().addStudent(studentNumber);
 				} catch (NumberFormatException e) {
 					System.err.println("ERROR: Invalid student number. ");
 				}			

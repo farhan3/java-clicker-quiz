@@ -17,6 +17,9 @@ public class Protocol {
 
 	private static final String EQUALS = "=";
 	
+	public static final String NOT_IN_CLASS = "Not in class";
+	public static final String ALREADY_ANSWERED = "Already answered";
+	
 	public static String sendStudentNumber(int studentNumber) {
 		return STUDENT_NUMBER_KEY + EQUALS + studentNumber;
 	}

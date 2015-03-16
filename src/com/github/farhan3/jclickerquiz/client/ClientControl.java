@@ -22,22 +22,24 @@ public class ClientControl {
 			+ HELP_CMD + ": view the avaliable commands.\n"
 			+ EXIT_CMD + ": stop the client and exit the program.\n\n"
 			+ STUDENT_NUMBER_CMD + ": Allows the student to enter their student number.\n"
-			+ CLASS_INFO_CMD + ": Allows the student to enter the host name/IP address \n"
+			+ CLASS_INFO_CMD + ": Allows the student to enter the host name/IP address "
 					+ "and port number of the instructor's computer.\n"
-			+ ENTER_CHOICE_CMD + ": Start a client process, connect to server \n"
-					+ "(using the information above) and send the student number, \n"
-					+ "receive the number of choices, prompt the student user for \n"
+			+ ENTER_CHOICE_CMD + ": Start a client process, connect to server "
+					+ "(using the information above) and send the student number, "
+					+ "receive the number of choices, prompt the student user for "
 					+ "his/her choice and send this choice to the server and close connection. \n";
 	
 	private int _studentNumber = 0;
 	private String _host;
 	private int _port = 0;
 	
+	protected ClientControl(){}
+	
 	/**
 	 * start the client's cmd handler.
 	 * 
 	 */
-	public void run() {
+	protected void run() {
 		System.out.println("Starting client...\n");
 		
 		System.out.println(MAN_PAGE);
@@ -65,7 +67,7 @@ public class ClientControl {
 						break;
 				} else { // handle invalid input
 					System.err.println("ERROR: Invalid input. Please use the " + HELP_CMD 
-							+ "command to view the avalible commands. ");
+							+ " command to view the avalible commands. ");
 				}
 				
 				System.out.print("\n> "); //formatting
@@ -89,7 +91,7 @@ public class ClientControl {
 		
 		try {
 			_studentNumber = Integer.parseInt(stdIn.readLine());
-			System.out.println("Student number accepted.");
+			System.out.println("Student number set.");
 		} catch (NumberFormatException e) {
 			System.err.println("ERROR: Invalid student number. ");
 		}		
@@ -142,32 +144,33 @@ public class ClientControl {
 				out.println(Protocol.sendStudentNumber(_studentNumber));
 				
 				String serverResponse = in.readLine();
-				if (!socket.isClosed() && !serverResponse.equals("Goodbye. ")) {
-					System.out.println("\nConnected to the server...");
-					System.out.println("\n" + Protocol.recieveChoicesString(serverResponse));
-					
-					Collection<String> recievedChoices = Protocol.recieveChoices(serverResponse);
-					
-					System.out.print("Respone: ");
-					
-					while ((userInput = stdIn.readLine()) != null) {
-						if (!socket.isClosed()) {		
-							if (recievedChoices.contains(userInput)) {
-								out.println(Protocol.sendAnswer(Option.valueOf(userInput)));
-								System.out.println("\nResponse sent.");
-								break;
-							} else {
-								System.err.println("ERROR: Invalid choice. Try again.");
-								System.out.print("\nResponse: ");
-							}			
+				
+				if (!socket.isClosed()) {
+					if (serverResponse.equals(Protocol.NOT_IN_CLASS)) {
+						System.err.println("ERROR: Please ensure you are in the class.");
+					} else if (serverResponse.equals(Protocol.ALREADY_ANSWERED)) {
+						System.err.println("ERROR: You have already asnwered this question.");
+					} else {
+						System.out.println("\nConnected to the server...");
+						System.out.println("\n" + Protocol.recieveChoicesString(serverResponse));
+						
+						Collection<String> recievedChoices = Protocol.recieveChoices(serverResponse);
+						
+						System.out.print("Response: ");
+						
+						while ((userInput = stdIn.readLine()) != null) {
+							if (!socket.isClosed()) {		
+								if (recievedChoices.contains(userInput)) {
+									out.println(Protocol.sendAnswer(Option.valueOf(userInput)));
+									System.out.println("\nResponse sent.");
+									break;
+								} else {
+									System.err.println("ERROR: Invalid choice. Try again.");
+									System.out.print("\nResponse: ");
+								}			
+							}
 						}
 					}
-					
-				} else if (serverResponse.equals("Goodbye. ")) {
-					System.err.println("ERROR: Server disconnected immediately. \n"
-							+ "Please ensure you are in the class.");
-				} else {
-					System.err.println("ERROR: No response from server.");
 				}
 			} catch (IOException e) {
 				System.err.println("ERROR: An error occured while connecting to the server.\n"

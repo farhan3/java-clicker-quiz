@@ -3,6 +3,8 @@ package com.github.farhan3.jclickerquiz.server;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Collection;
+import java.util.LinkedList;
 
 import com.github.farhan3.jclickerquiz.model.Question;
 
@@ -19,6 +21,7 @@ public class ClientListener extends Thread {
 	
 	private ServerSocket _serverSocket;
 	private Question _question;
+	private Collection<ClientHandler> _connectedClients = new LinkedList<ClientHandler>();
 	
 	/**
 	 * 
@@ -50,7 +53,10 @@ public class ClientListener extends Thread {
 			// new client connected, create a new thread for handling communication with it
 			// so we don't hold up the listener thread; this allows concurrency
 			if (clientSocket != null) {
-				new ClientHandler(clientSocket, _question).start();
+				ClientHandler client = new ClientHandler(clientSocket, _question);
+				client.start();
+				_connectedClients.add(client);
+				
 			}
 		}
 	}
@@ -60,5 +66,16 @@ public class ClientListener extends Thread {
 	 */
 	protected void stopThread() {
 		_running = false;
+		
+		for (ClientHandler client : _connectedClients) {
+			if (client != null && client.isAlive()) {
+				client.stopThread();
+				try {
+					client.join();
+				} catch (InterruptedException e) {
+					System.out.println("Client listener: Error while stopping client.");
+				}
+			}
+		}
 	}
 }

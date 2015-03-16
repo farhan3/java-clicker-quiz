@@ -2,7 +2,7 @@ package com.github.farhan3.jclickerquiz.server;
 
 import java.net.URISyntaxException;
 
-import com.github.farhan3.jclickerquiz.model.StudentManager;
+import com.github.farhan3.jclickerquiz.model.ClassManager;
 
 /**
  * The Server class is the main class to start the server for
@@ -35,7 +35,7 @@ public class Server {
 			// if the second arg is provided, then read the list of student numbers
 			if (args.length == 2) {
 				String studentListFilePath = args[1];
-				StudentManager.getInstance().addStudents(studentListFilePath);;
+				ClassManager.getInstance().addStudents(studentListFilePath);;
 			}
 		} catch (URISyntaxException e) {
 			System.err.println("Error while processing the student list file."
