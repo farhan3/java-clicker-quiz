@@ -1,4 +1,4 @@
-package com.github.farhan3.jclickerquiz.ui;
+package com.github.farhan3.jclickerquiz.gui;
 
 import java.util.Arrays;
 import org.eclipse.swt.widgets.Display;
