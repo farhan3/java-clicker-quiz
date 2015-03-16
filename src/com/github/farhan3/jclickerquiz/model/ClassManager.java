@@ -11,22 +11,22 @@ import java.util.LinkedList;
  * @author farhan
  *
  */
-public class StudentManager {
+public class ClassManager {
 	
-	private static StudentManager _studentManger;
+	private static ClassManager _studentManger;
 	
 	private static Collection<Integer> _students = new LinkedList<Integer>();
 	
-	private StudentManager() {
+	private ClassManager() {
 	}
 	
 	/**
 	 * Get the instance of StudentManager
 	 * @return the singleton StudentManger
 	 */
-	public static StudentManager getInstance() {
+	public static ClassManager getInstance() {
 		if (_studentManger == null) {
-			_studentManger = new StudentManager();
+			_studentManger = new ClassManager();
 		}
 		
 		return _studentManger;
