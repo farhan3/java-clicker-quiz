@@ -13,6 +13,14 @@ The overall design of the program was split up into two components, one for the 
 ## Usage
 The [server jar file](server) and [client jar file](client) can be found in their respective directories. 
 
+Start the server by running the following command:
+
+    java -jar server.jar <port number>
+
+Start the client by running the following command:
+    
+    java -jar client.jar
+
 ### Server
 The server side has a main class named Server; it handles the processing and error checking of the input parameters. This class must be provided the port number on which the server should be run. Additionally, a file can be provided to it that contains the list of students in the class. It then passes this information to an instance of the ServerControl class.
 
